@@ -80,26 +80,61 @@
         }
 
         .logo {
-            display: inline-block;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 50%;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Orbitron', monospace;
-            font-weight: 900;
-            font-size: 1.8rem;
-            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
-            animation: pulse 3s ease-in-out infinite;
-        }
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 1.8rem;
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+    animation: pulse 3s ease-in-out infinite;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(0, 212, 255, 0.5); }
-            50% { transform: scale(1.05); box-shadow: 0 0 50px rgba(0, 212, 255, 0.8); }
-        }
+.logo:hover {
+    animation: smoothGlow 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(0, 212, 255, 0.5); }
+    50% { transform: scale(1.05); box-shadow: 0 0 50px rgba(0, 212, 255, 0.8); }
+}
+
+@keyframes smoothGlow {
+    0% { 
+        box-shadow: 0 0 20px rgba(0, 212, 255, 0.8),
+                    0 0 40px rgba(0, 212, 255, 0.6),
+                    0 0 60px rgba(0, 212, 255, 0.4);
+    }
+    25% { 
+        box-shadow: 0 0 25px rgba(255, 107, 157, 0.8),
+                    0 0 50px rgba(255, 107, 157, 0.6),
+                    0 0 75px rgba(255, 107, 157, 0.4);
+    }
+    50% { 
+        box-shadow: 0 0 30px rgba(255, 255, 255, 1),
+                    0 0 60px rgba(0, 212, 255, 0.8),
+                    0 0 90px rgba(255, 107, 157, 0.6);
+    }
+    75% { 
+        box-shadow: 0 0 25px rgba(255, 107, 157, 0.8),
+                    0 0 50px rgba(255, 107, 157, 0.6),
+                    0 0 75px rgba(255, 107, 157, 0.4);
+    }
+    100% { 
+        box-shadow: 0 0 20px rgba(0, 212, 255, 0.8),
+                    0 0 40px rgba(0, 212, 255, 0.6),
+                    0 0 60px rgba(0, 212, 255, 0.4);
+    }
+}
 
         h1 {
     font-family: 'Orbitron', monospace;
