@@ -1,655 +1,421 @@
-# ⚡ ESP32 Weather Station Dashboard
-
+⚡ ESP32 Weather Station Dashboard
 <div align="center">
-
-![Project Status](https://img.shields.io/badge/Status-Active-success)
-![License](https://img.shields.io/badge/License-MIT-blue)
-![Platform](https://img.shields.io/badge/Platform-ESP32-orange)
-![Sensor](https://img.shields.io/badge/Sensor-DHT11-green)
-
-**A modern, real-time IoT weather monitoring system with a stunning web dashboard**
-
-[Features](#-features) • [Demo](#-demo) • [Installation](#-installation) • [Usage](#-usage) • [Troubleshooting](#-troubleshooting)
-
+Show Image
+Show Image
+Show Image
+Show Image
+Show Image
+A modern, real-time IoT weather monitoring system with a stunning web dashboard and persistent database storage
 </div>
 
----
+📋 Table of Contents
 
-## 📋 Table of Contents
+Overview
+Features
+Technologies
+Hardware Requirements
+Software Requirements
+Database Setup
+Installation
+Wiring Diagram
+API Endpoints
+File Structure
+Troubleshooting
+Future Enhancements
+License
 
-- [Overview](#-overview)
-- [Features](#-features)
-- [Demo](#-demo)
-- [Technologies](#-technologies)
-- [Hardware Requirements](#-hardware-requirements)
-- [Software Requirements](#-software-requirements)
-- [Installation](#-installation)
-- [Wiring Diagram](#-wiring-diagram)
-- [Usage](#-usage)
-- [File Structure](#-file-structure)
-- [API Endpoints](#-api-endpoints)
-- [Troubleshooting](#-troubleshooting)
-- [Future Enhancements](#-future-enhancements)
-- [Contributing](#-contributing)
-- [License](#-license)
-- [Acknowledgments](#-acknowledgments)
 
----
+🌟 Overview
+This project is a comprehensive IoT Weather Monitoring System that uses an ESP32 microcontroller and DHT11 sensor to measure temperature and humidity in real-time. Sensor data is sent to a PHP backend, stored in a MySQL database, and displayed on a professional animated web dashboard with live data visualization and role-based access.
+Key Highlights
 
-## 🌟 Overview
+🎨 Beautiful UI — Modern glassmorphism design with smooth animations
+⚡ Real-time Updates — Live sensor data every 3 seconds
+📊 Data Visualization — Interactive charts showing temperature and humidity trends
+💾 Database Logging — All sensor readings stored in MySQL via PHP PDO
+🔐 Role-Based Access — Admin, Manager, and User roles
+📱 Responsive Design — Works on desktop, tablet, and mobile
 
-This project is a comprehensive **IoT Weather Monitoring System** that uses an ESP32 microcontroller and DHT11 sensor to measure temperature and humidity in real-time. The system features a professional, animated web dashboard with live data visualization.
 
-### Key Highlights
+✨ Features
+Dashboard Features
 
-- 🎨 **Beautiful UI** - Modern glassmorphism design with smooth animations
-- ⚡ **Real-time Updates** - Live sensor data every 3 seconds
-- 📊 **Data Visualization** - Interactive charts showing temperature and humidity trends
-- 📱 **Responsive Design** - Works on desktop, tablet, and mobile devices
-- 🌐 **Web-based** - Accessible from any device on the same network
-- 🔥 **Cool Effects** - Lightning text effects and glowing animations on hover
+✅ Real-time temperature display (°C)
+✅ Real-time humidity display (%)
+✅ Heat index calculation
+✅ Comfort level indicator
+✅ System status monitoring
+✅ Live updating line charts
+✅ Device information panel
+✅ Historical data from database
+✅ WiFi signal strength display
+✅ System uptime tracking
 
----
+Database Features
 
-## ✨ Features
+✅ Stores every sensor reading with timestamp
+✅ Role-based user authentication
+✅ Activity logging per user
+✅ Email verification support
+✅ Query historical data by date range
 
-### Dashboard Features
-- ✅ Real-time temperature display (°C)
-- ✅ Real-time humidity display (%)
-- ✅ Heat index calculation
-- ✅ Comfort level indicator
-- ✅ System status monitoring
-- ✅ Live updating line charts
-- ✅ Device information panel
-- ✅ Connection status indicator
-- ✅ WiFi signal strength display
-- ✅ System uptime tracking
 
-### Visual Features
-- ⚡ Lightning text effects on hover
-- 🌊 Animated background particles
-- 💎 Glassmorphism card design
-- 🎭 Smooth transitions and animations
-- 🎨 Color-coded sensor indicators
-- ✨ Pulsing logo animation
+🛠 Technologies
+Hardware
 
-### Technical Features
-- 🔄 RESTful API architecture
-- 📡 WiFi connectivity
-- 🔌 CORS enabled for cross-origin requests
-- 📈 Chart.js for data visualization
-- 💾 Historical data tracking
-- ⏱️ Configurable update intervals
+ESP32 — Microcontroller with WiFi capability
+DHT11 — Temperature and humidity sensor
 
----
+Software
 
-## 🎬 Demo
+Arduino IDE — ESP32 programming
+PHP 8.0+ with PDO — Backend API and database layer
+MySQL / MariaDB — Data storage
+HTML5 / CSS3 / JavaScript — Frontend dashboard
+Chart.js — Data visualization
+Apache (XAMPP/WAMP or Hostinger) — Web server
 
-### Dashboard Preview
+Arduino Libraries
 
-**Main Interface:**
-- Temperature, Humidity, Heat Index, and System Status cards
-- Real-time updating values with change indicators
-- Smooth animations and hover effects
+WiFi.h — ESP32 WiFi connectivity
+HTTPClient.h — Sending data to PHP API
+DHT.h — DHT11 sensor interface
+ArduinoJson.h — JSON formatting
 
-**Charts Section:**
-- Temperature trend line chart
-- Humidity trend line chart
-- Last 20 data points displayed
 
-**Device Information:**
-- Microcontroller type (ESP32)
-- Sensor type (DHT11)
-- Firmware version
-- System uptime
-- WiFi signal strength
-- IP address
+🔧 Hardware Requirements
+ComponentSpecificationQuantityESP32 Development BoardAny ESP32 variant1DHT11 SensorTemperature & Humidity1Jumper WiresMale-to-Female3–4Breadboard (optional)Standard size1USB CableMicro-USB or USB-C1
 
----
+💻 Software Requirements
 
-## 🛠 Technologies
+Arduino IDE (1.8.x or 2.x)
+ESP32 Board Support Package
+USB Drivers (CP2102 or CH340)
+XAMPP / WAMP (for localhost) or Hostinger (for deployment)
+phpMyAdmin
+FileZilla (for FTP deployment)
+Chrome, Firefox, or Edge (latest)
 
-### Hardware
-- **ESP32** - Microcontroller with WiFi capability
-- **DHT11** - Temperature and humidity sensor
 
-### Software
-- **Arduino IDE** - ESP32 programming
-- **HTML5/CSS3** - Frontend structure and styling
-- **JavaScript (ES6)** - Dashboard logic
-- **Chart.js** - Data visualization
-- **C++** - ESP32 firmware
+🗄️ Database Setup
+📐 Database Schema
+sql-- ============================================================
+-- ESP32 Weather Station — Database Schema
+-- Database: esp32_weather_db
+-- ============================================================
 
-### Libraries
-- `WiFi.h` - ESP32 WiFi connectivity
-- `WebServer.h` - HTTP server on ESP32
-- `DHT.h` - DHT11 sensor interface
-- `ArduinoJson.h` - JSON data formatting
+CREATE DATABASE IF NOT EXISTS esp32_weather_db
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
 
----
+USE esp32_weather_db;
 
-## 🔧 Hardware Requirements
+-- ------------------------------------------------------------
+-- TABLE: users
+-- Stores registered users with roles and verification status
+-- ------------------------------------------------------------
+CREATE TABLE users (
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    name        VARCHAR(100)                        NOT NULL,
+    email       VARCHAR(150)                        NOT NULL UNIQUE,
+    password    VARCHAR(255)                        NOT NULL,  -- bcrypt hashed
+    role        ENUM('admin', 'manager', 'user')    NOT NULL DEFAULT 'user',
+    is_verified TINYINT(1)                          NOT NULL DEFAULT 0,
+    verify_token VARCHAR(255)                       DEFAULT NULL,
+    created_at  TIMESTAMP                           DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP                           DEFAULT CURRENT_TIMESTAMP
+                                                    ON UPDATE CURRENT_TIMESTAMP
+);
 
-| Component | Specification | Quantity |
-|-----------|--------------|----------|
-| ESP32 Development Board | Any ESP32 variant | 1 |
-| DHT11 Sensor | Temperature & Humidity | 1 |
-| Jumper Wires | Male-to-Female | 3-4 |
-| Breadboard (optional) | Standard size | 1 |
-| USB Cable | Micro-USB or USB-C | 1 |
-| Power Supply | 5V (via USB) | 1 |
+-- ------------------------------------------------------------
+-- TABLE: sensor_readings
+-- Stores every temperature and humidity reading from ESP32
+-- ------------------------------------------------------------
+CREATE TABLE sensor_readings (
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    temperature  DECIMAL(5,2)   NOT NULL,           -- e.g. 28.50 °C
+    humidity     DECIMAL(5,2)   NOT NULL,           -- e.g. 65.30 %
+    heat_index   DECIMAL(5,2)   DEFAULT NULL,       -- calculated value
+    wifi_rssi    INT            DEFAULT NULL,       -- WiFi signal strength (dBm)
+    esp32_ip     VARCHAR(45)    DEFAULT NULL,       -- ESP32 IP address
+    recorded_at  TIMESTAMP      DEFAULT CURRENT_TIMESTAMP
+);
 
-### Optional Components
-- 10kΩ resistor (if DHT11 doesn't have built-in pull-up)
-- Enclosure/case for the project
+-- ------------------------------------------------------------
+-- TABLE: activity_logs
+-- Tracks user actions for audit trail
+-- ------------------------------------------------------------
+CREATE TABLE activity_logs (
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    user_id     INT            NOT NULL,
+    action      VARCHAR(255)   NOT NULL,            -- e.g. "Viewed dashboard"
+    module      VARCHAR(100)   DEFAULT NULL,        -- e.g. "dashboard", "users"
+    ip_address  VARCHAR(45)    DEFAULT NULL,
+    created_at  TIMESTAMP      DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
 
----
+-- ------------------------------------------------------------
+-- TABLE: sensor_alerts (optional but recommended)
+-- Logs when readings exceed safe thresholds
+-- ------------------------------------------------------------
+CREATE TABLE sensor_alerts (
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    reading_id   INT            NOT NULL,
+    alert_type   ENUM('high_temp', 'low_temp', 'high_humidity', 'low_humidity') NOT NULL,
+    value        DECIMAL(5,2)   NOT NULL,
+    threshold    DECIMAL(5,2)   NOT NULL,
+    is_resolved  TINYINT(1)     DEFAULT 0,
+    created_at   TIMESTAMP      DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (reading_id) REFERENCES sensor_readings(id) ON DELETE CASCADE
+);
 
-## 💻 Software Requirements
-
-### Development Environment
-- **Arduino IDE** (version 1.8.x or 2.x)
-- **ESP32 Board Support Package**
-- **USB drivers** for ESP32
-
-### Required Arduino Libraries
+-- ------------------------------------------------------------
+-- DEFAULT USERS (passwords are bcrypt of 'password123')
+-- ------------------------------------------------------------
+INSERT INTO users (name, email, password, role, is_verified) VALUES
+('Administrator', 'admin@example.com',
+ '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 1),
+('Manager User', 'manager@example.com',
+ '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'manager', 1),
+('Regular User', 'user@example.com',
+ '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'user', 1);
 ```
-- DHT sensor library (by Adafruit)
-- Adafruit Unified Sensor
-- ArduinoJson (version 6.x)
-```
 
-### Web Browser
-- Chrome, Firefox, Safari, or Edge (latest version)
-- JavaScript enabled
+### 🗂️ Schema Overview
+
+| Table | Purpose |
+|-------|---------|
+| `users` | Stores all registered users with roles and email verification |
+| `sensor_readings` | Logs every temperature & humidity reading from ESP32 |
+| `activity_logs` | Tracks what each user does in the system |
+| `sensor_alerts` | Records when sensor values exceed defined thresholds |
 
 ---
 
-## 📥 Installation
+## 📂 Project Structure
+```
+app/
+│
+├── admin/
+│   └── dashboard.php              ← Admin-only dashboard
+│
+├── auth/
+│   ├── signout.php
+│   └── verify-email.php
+│
+├── manager/
+│   └── dashboard.php              ← Manager dashboard
+│
+├── user/
+│   └── dashboard.php              ← User dashboard
+│
+├── users/
+│   ├── dashboard.php
+│   ├── user-create.php
+│   ├── user-delete.php
+│   ├── user-update.php
+│   └── user-view.php
+│
+├── api/
+│   ├── sensor-data.php            ← ESP32 POSTs readings here
+│   └── get-readings.php           ← Dashboard fetches data here
+│
+├── assets/
+│   └── css/
+│       └── style.css
+│
+├── config/
+│   ├── config.php                 ← DB credentials & BASE_URL
+│   └── functions.php
+│
+├── db/
+│   └── schema.sql                 ← Full database schema
+│
+├── includes/
+│   └── activity-logger.php
+│
+├── tests/
+│   ├── test-access.php
+│   ├── test-login.php
+│   └── test-mail.php
+│
+├── weather-dashboard-live.html    ← Main live dashboard
+├── weather-dashboard.html         ← Demo/simulated dashboard
+└── index.php                      ← Login page
+```
 
-### Step 1: Hardware Setup
+---
 
-#### Wiring Connections
+## 🚀 Localhost Setup (XAMPP / WAMP)
 
+**1️⃣ Copy Project**
+
+Place project folder inside:
+```
+C:/xampp/htdocs/app
+```
+
+**2️⃣ Create Database**
+
+Open phpMyAdmin at `http://localhost/phpmyadmin`, create a database named `esp32_weather_db`, then import:
+```
+app/db/schema.sql
+3️⃣ Configure Database Connection
+Edit app/config/config.php:
+php<?php
+$host   = 'localhost';
+$dbname = 'esp32_weather_db';
+$username = 'root';
+$password = '';
+
+try {
+    $pdo = new PDO(
+        "mysql:host=$host;dbname=$dbname;charset=utf8mb4",
+        $username,
+        $password,
+        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+    );
+} catch (PDOException $e) {
+    die('Database connection failed: ' . $e->getMessage());
+}
+?>
+4️⃣ Set Base URL
+phpdefine('BASE_URL', 'http://localhost/app');
+```
+
+**5️⃣ ESP32 API Endpoint**
+
+The ESP32 will POST data to:
+```
+http://YOUR_PC_IP/app/api/sensor-data.php
+Example ESP32 Arduino code snippet:
+cpp#include <HTTPClient.h>
+
+const char* serverURL = "http://192.168.1.100/app/api/sensor-data.php";
+
+void sendData(float temp, float hum, float heatIdx) {
+    HTTPClient http;
+    http.begin(serverURL);
+    http.addHeader("Content-Type", "application/json");
+
+    String payload = "{\"temperature\":" + String(temp) +
+                     ",\"humidity\":" + String(hum) +
+                     ",\"heat_index\":" + String(heatIdx) +
+                     ",\"rssi\":" + String(WiFi.RSSI()) +
+                     ",\"ip\":\"" + WiFi.localIP().toString() + "\"}";
+
+    int responseCode = http.POST(payload);
+    http.end();
+}
+sensor-data.php then receives and stores the reading:
+php<?php
+require '../config/config.php';
+
+$data = json_decode(file_get_contents('php://input'), true);
+
+$stmt = $pdo->prepare("
+    INSERT INTO sensor_readings
+    (temperature, humidity, heat_index, wifi_rssi, esp32_ip)
+    VALUES (?, ?, ?, ?, ?)
+");
+
+$stmt->execute([
+    $data['temperature'],
+    $data['humidity'],
+    $data['heat_index'],
+    $data['rssi'],
+    $data['ip']
+]);
+
+echo json_encode(['status' => 'success']);
+?>
+```
+
+**6️⃣ Default Accounts**
+
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@example.com | password123 |
+| Manager | manager@example.com | password123 |
+| User | user@example.com | password123 |
+
+---
+
+## 🔌 Wiring Diagram
 ```
 DHT11 Pin  →  ESP32 Pin
 ---------     ---------
-VCC (+)    →  3.3V (or 5V)
+VCC (+)    →  3.3V
 GND (-)    →  GND
 DATA (S)   →  GPIO 4
-```
 
-**Wiring Diagram:**
-```
      ESP32                    DHT11
   ┌─────────┐              ┌──────┐
   │   3.3V  ├──────────────┤ VCC  │
   │   GND   ├──────────────┤ GND  │
   │  GPIO4  ├──────────────┤ DATA │
   └─────────┘              └──────┘
-```
 
-> **Note:** If your DHT11 module doesn't have a built-in pull-up resistor, add a 10kΩ resistor between VCC and DATA pins.
+Note: Add a 10kΩ pull-up resistor between VCC and DATA if your DHT11 has no built-in one.
 
-### Step 2: Software Installation
 
-#### 2.1 Install Arduino IDE
-1. Download from: https://www.arduino.cc/en/software
-2. Install and launch Arduino IDE
-
-#### 2.2 Add ESP32 Board Support
-1. Go to **File → Preferences**
-2. In "Additional Board Manager URLs", add:
-   ```
-   https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
-   ```
-3. Go to **Tools → Board → Boards Manager**
-4. Search for "ESP32" and install "**esp32 by Espressif Systems**"
-
-#### 2.3 Install Required Libraries
-1. Go to **Sketch → Include Library → Manage Libraries**
-2. Install the following:
-   - **DHT sensor library** by Adafruit
-   - **Adafruit Unified Sensor** by Adafruit
-   - **ArduinoJson** by Benoit Blanchon (v6.x)
-
-### Step 3: Configure and Upload ESP32 Code
-
-#### 3.1 Open the Arduino Sketch
-1. Open `esp32_weather_server.ino` in Arduino IDE
-
-#### 3.2 Configure WiFi Credentials
-```cpp
-// Line 7-8: Replace with your WiFi credentials
-const char* ssid = "YOUR_WIFI_SSID";        // Your WiFi network name
-const char* password = "YOUR_WIFI_PASSWORD"; // Your WiFi password
-```
-
-#### 3.3 Configure DHT Pin (Optional)
-```cpp
-// Line 11: Change if using different GPIO pin
-#define DHTPIN 4  // Default is GPIO 4
-```
-
-#### 3.4 Upload to ESP32
-1. Connect ESP32 to computer via USB
-2. Select board: **Tools → Board → ESP32 Dev Module**
-3. Select port: **Tools → Port → [Your ESP32 Port]**
-4. Click **Upload** button (→)
-5. Wait for "Done uploading" message
-
-#### 3.5 Get ESP32 IP Address
-1. Open **Serial Monitor**: **Tools → Serial Monitor**
-2. Set baud rate to **115200**
-3. Press ESP32 reset button
-4. Note the IP address displayed:
-   ```
-   WiFi connected!
-   IP Address: 192.168.1.XXX
-   HTTP server started
-   ```
-
-### Step 4: Setup Dashboard
-
-#### 4.1 Open Dashboard
-1. Open `weather-dashboard-live.html` in your web browser
-
-#### 4.2 Connect to ESP32
-1. Enter the ESP32 IP address in the connection panel
-2. Click **"Connect"** button
-3. Status should change to **"Connected"** (green)
-
-#### 4.3 Verify Data Flow
-- Temperature and humidity should start updating
-- Charts should begin plotting data
-- Last update timestamp should refresh every 3 seconds
-
----
-
-## 🔌 Wiring Diagram
-
-### Visual Connection Guide
-
-```
-┌─────────────────────────────────────────────┐
-│              ESP32 BOARD                     │
-│                                              │
-│  [USB]                                       │
-│   ║                                          │
-│  ╔╩═══════════════════════════════════╗    │
-│  ║                                     ║    │
-│  ║         ESP32-WROOM                 ║    │
-│  ║                                     ║    │
-│  ║  3V3 ●───────────┐                 ║    │
-│  ║                   │                 ║    │
-│  ║  GND ●───────────┼────┐            ║    │
-│  ║                   │    │            ║    │
-│  ║  GP4 ●───────────┼────┼───┐        ║    │
-│  ╚═══════════════════╪════╪═══╪════════╝    │
-└────────────────────┬─┼────┼───┼─────────────┘
-                     │ │    │   │
-                     │ │    │   │
-              ┌──────┴─┴────┴───┴──┐
-              │    DHT11 MODULE    │
-              │  ┌──────────────┐  │
-              │  │   ████████   │  │ ← Sensor
-              │  └──────────────┘  │
-              │                    │
-              │  VCC  GND  DATA    │
-              └────────────────────┘
-```
-
----
-
-## 🚀 Usage
-
-### Starting the System
-
-1. **Power on ESP32** - Connect to power via USB
-2. **Wait for WiFi connection** - Check Serial Monitor
-3. **Open Dashboard** - Launch HTML file in browser
-4. **Enter IP Address** - Input ESP32's IP
-5. **Click Connect** - Start receiving data
-
-### Reading the Dashboard
-
-#### Temperature Card
-- Shows current temperature in Celsius
-- Displays temperature change from last reading
-- Up arrow (↑) indicates increase
-
-#### Humidity Card
-- Shows current humidity percentage
-- Displays humidity change from last reading
-- Down arrow (↓) indicates decrease
-
-#### Heat Index Card
-- Calculated comfort level based on temp + humidity
-- Shows status: Cool, Comfortable, Hot, Very Hot
-
-#### System Status Card
-- Shows "ONLINE" when connected
-- Displays last update timestamp
-
-### Accessing the API
-
-You can access sensor data directly via API:
-
-#### Get Sensor Data (JSON)
-```
-http://[ESP32_IP_ADDRESS]/data
-```
-
-**Response:**
-```json
-{
+🔌 API Endpoints
+POST /api/sensor-data.php
+ESP32 sends sensor readings to this endpoint.
+Request Body:
+json{
   "temperature": 28.5,
   "humidity": 65.3,
-  "heatIndex": 30.2,
-  "status": "online",
-  "uptime": 3600,
+  "heat_index": 30.2,
   "rssi": -45,
-  "ip": "192.168.1.100"
+  "ip": "192.168.1.101"
 }
-```
-
-#### View Simple Web Page
-```
-http://[ESP32_IP_ADDRESS]/
-```
-
----
-
-## 📁 File Structure
-
-```
-esp32-weather-station/
-│
-├── esp32_weather_server.ino       # ESP32 Arduino sketch
-├── weather-dashboard.html         # Demo dashboard (simulated data)
-├── weather-dashboard-live.html    # Live dashboard (connects to ESP32)
-├── SETUP_GUIDE.md                 # Detailed setup instructions
-├── WIRING_DIAGRAM.txt             # Hardware wiring guide
-└── README.md                      # This file
-```
-
-### File Descriptions
-
-| File | Purpose |
-|------|---------|
-| `esp32_weather_server.ino` | ESP32 firmware - reads sensor and serves web API |
-| `weather-dashboard-live.html` | Main dashboard - connects to real ESP32 |
-| `weather-dashboard.html` | Demo version - simulated data for testing |
-| `SETUP_GUIDE.md` | Comprehensive setup walkthrough |
-| `WIRING_DIAGRAM.txt` | Hardware connection instructions |
-
----
-
-## 🔌 API Endpoints
-
-### GET `/`
-Returns a simple HTML page with current sensor readings.
-
-**Response:** HTML page
-
----
-
-### GET `/data`
-Returns current sensor data in JSON format.
-
-**Response Type:** `application/json`
-
-**Response Example:**
-```json
-{
-  "temperature": 28.5,      // Temperature in Celsius
-  "humidity": 65.3,         // Humidity percentage
-  "heatIndex": 30.2,        // Calculated heat index
-  "status": "online",       // System status
-  "uptime": 3600,           // Uptime in seconds
-  "rssi": -45,              // WiFi signal strength (dBm)
-  "ip": "192.168.1.100"     // ESP32 IP address
+GET /api/get-readings.php
+Dashboard fetches the latest or historical readings.
+Response:
+json{
+  "latest": {
+    "temperature": 28.5,
+    "humidity": 65.3,
+    "heat_index": 30.2,
+    "recorded_at": "2026-02-27 14:35:00"
+  },
+  "history": [...]
 }
-```
 
-**CORS Headers:** Enabled for cross-origin access
+🐛 Troubleshooting
+ESP32 won't upload — Hold BOOT button while uploading, check USB cable is data-capable, install CP2102/CH340 drivers, select correct COM port and board.
+Sensor reads "nan" — Check wiring, ensure 3.3V power, add 10kΩ pull-up resistor, verify correct GPIO pin in code.
+ESP32 won't connect to WiFi — Use 2.4GHz network only, double-check SSID and password in the sketch.
+Dashboard shows disconnected — Confirm ESP32 and PC are on the same network, verify IP address, try accessing http://[ESP32_IP]/data directly in browser.
+Database not receiving data — Confirm Apache and MySQL are running in XAMPP, check config.php credentials, verify sensor-data.php endpoint URL in ESP32 sketch.
 
----
+🚀 Future Enhancements
 
-## 🐛 Troubleshooting
+ Firebase / cloud database integration
+ Email/SMS alerts for extreme readings
+ CSV/Excel data export
+ WebSocket for true real-time updates (replacing polling)
+ PWA support for offline access
+ Support for multiple ESP32 devices
+ DHT22 / BMP280 / MQ-135 sensor upgrades
+ OLED display for standalone operation
 
-### ESP32 Issues
 
-#### ❌ ESP32 won't connect to WiFi
-**Solutions:**
-- ✅ Verify WiFi SSID and password are correct
-- ✅ Ensure ESP32 is within WiFi range
-- ✅ Use 2.4GHz WiFi (ESP32 doesn't support 5GHz)
-- ✅ Check if WiFi network requires special login
+📄 License
+This project is licensed under the MIT License — see the LICENSE file for details.
 
-#### ❌ Sensor reads "nan" or incorrect values
-**Solutions:**
-- ✅ Check wiring connections (VCC, GND, DATA)
-- ✅ Ensure DHT11 has proper power (3.3V or 5V)
-- ✅ Add 10kΩ pull-up resistor if needed
-- ✅ Try different GPIO pin and update code
-- ✅ Test with known working DHT11 sensor
+🙏 Acknowledgments
 
-#### ❌ Upload fails to ESP32
-**Solutions:**
-- ✅ Press and hold BOOT button while uploading
-- ✅ Select correct board: "ESP32 Dev Module"
-- ✅ Select correct COM port
-- ✅ Install/update USB drivers
-- ✅ Try different USB cable
+Chart.js — Data visualization
+Adafruit DHT Library — Sensor support
+ArduinoJson — JSON handling
+Espressif for the ESP32 platform
+Arduino community for continued support
 
-### Dashboard Issues
-
-#### ❌ Dashboard shows "Disconnected"
-**Solutions:**
-- ✅ Verify ESP32 and computer are on same WiFi network
-- ✅ Check if IP address is correct
-- ✅ Try accessing `http://[ESP32_IP]/data` in browser directly
-- ✅ Check browser console for errors (F12)
-- ✅ Disable browser extensions that might block connections
-
-#### ❌ CORS errors in browser console
-**Solutions:**
-- ✅ Use same device for ESP32 and dashboard
-- ✅ Disable CORS in browser (development only):
-  ```bash
-  # Chrome example
-  chrome.exe --disable-web-security --user-data-dir="C:\temp"
-  ```
-- ✅ Host dashboard on ESP32 itself (advanced)
-
-#### ❌ Charts not updating
-**Solutions:**
-- ✅ Ensure connection status shows "Connected"
-- ✅ Check browser console for JavaScript errors
-- ✅ Verify data is being received (check Network tab)
-- ✅ Refresh the page
-- ✅ Clear browser cache
-
-### Network Issues
-
-#### ❌ Can't access ESP32 from other devices
-**Solutions:**
-- ✅ Check firewall settings
-- ✅ Ensure all devices on same network
-- ✅ Verify ESP32 IP hasn't changed (DHCP)
-- ✅ Try using static IP for ESP32
-
----
-
-## 🚀 Future Enhancements
-
-### Planned Features
-
-- [ ] **Database Integration** - Store historical data (MySQL/MongoDB/Firebase)
-- [ ] **Mobile App** - Native Android/iOS application
-- [ ] **Email/SMS Alerts** - Notifications for extreme conditions
-- [ ] **Multiple Sensors** - Support for multiple ESP32 devices
-- [ ] **Data Export** - Download data as CSV/Excel
-- [ ] **Advanced Analytics** - Daily/weekly/monthly reports
-- [ ] **Weather Forecast** - Integration with weather APIs
-- [ ] **User Authentication** - Login system for security
-- [ ] **Dark/Light Theme** - Theme toggle option
-- [ ] **Voice Control** - Integration with Alexa/Google Home
-
-### Hardware Upgrades
-
-- [ ] Add DHT22 sensor (higher accuracy)
-- [ ] Include barometric pressure sensor (BMP280)
-- [ ] Add light sensor (BH1750)
-- [ ] Include air quality sensor (MQ-135)
-- [ ] Add display (OLED/LCD) for standalone operation
-- [ ] Include buzzer for alarm system
-
-### Software Improvements
-
-- [ ] PWA support for offline functionality
-- [ ] WebSocket for real-time updates (instead of polling)
-- [ ] Multi-language support
-- [ ] Data compression for faster transmission
-- [ ] Automatic data backup
-- [ ] REST API documentation (Swagger)
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Here's how you can help:
-
-1. **Fork** the repository
-2. **Create** a feature branch (`git checkout -b feature/AmazingFeature`)
-3. **Commit** your changes (`git commit -m 'Add some AmazingFeature'`)
-4. **Push** to the branch (`git push origin feature/AmazingFeature`)
-5. **Open** a Pull Request
-
-### Contribution Guidelines
-
-- Follow existing code style
-- Comment your code
-- Update documentation
-- Test thoroughly before submitting
-- Include screenshots for UI changes
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License**.
-
-```
-MIT License
-
-Copyright (c) 2026 [Your Name]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
-
----
-
-## 🙏 Acknowledgments
-
-### Libraries & Frameworks
-- [Chart.js](https://www.chartjs.org/) - Beautiful charts
-- [Adafruit DHT Library](https://github.com/adafruit/DHT-sensor-library) - DHT sensor support
-- [ArduinoJson](https://arduinojson.org/) - JSON handling
-
-### Fonts
-- [Google Fonts - Orbitron](https://fonts.google.com/specimen/Orbitron) - Futuristic display font
-- [Google Fonts - Rajdhani](https://fonts.google.com/specimen/Rajdhani) - Modern sans-serif font
-
-### Inspiration
-- Modern IoT dashboard designs
-- Glassmorphism design trend
-- Smart home automation projects
-
-### Special Thanks
-- Espressif for ESP32 development
-- Adafruit for sensor libraries
-- Arduino community for support
-
----
-
-## 📞 Contact & Support
-
-- **Author:** [Your Name]
-- **Email:** [your.email@example.com]
-- **GitHub:** [@yourusername](https://github.com/yourusername)
-- **Project Link:** [https://github.com/yourusername/esp32-weather-station](https://github.com/yourusername/esp32-weather-station)
-
-### Get Help
-- Open an [Issue](https://github.com/yourusername/esp32-weather-station/issues)
-- Check [Discussions](https://github.com/yourusername/esp32-weather-station/discussions)
-- Read the [Setup Guide](SETUP_GUIDE.md)
-
----
-
-## 📸 Screenshots
-
-### Main Dashboard
-![Dashboard Overview](screenshots/dashboard-main.png)
-
-### Connection Panel
-![Connection](screenshots/connection-panel.png)
-
-### Live Charts
-![Charts](screenshots/live-charts.png)
-
-### Device Info
-![Device Info](screenshots/device-info.png)
-
-### Mobile View
-![Mobile Responsive](screenshots/mobile-view.png)
-
----
-
-## 🎓 Educational Value
-
-This project demonstrates:
-
-1. **IoT Fundamentals** - Sensor interfacing, WiFi connectivity
-2. **Web Development** - HTML, CSS, JavaScript, responsive design
-3. **Embedded Systems** - ESP32 programming, real-time systems
-4. **API Design** - RESTful architecture, JSON data exchange
-5. **Data Visualization** - Charts, real-time updates
-6. **Network Programming** - HTTP servers, CORS handling
-
-### Learning Outcomes
-- ✅ Understand ESP32 microcontroller programming
-- ✅ Learn sensor interfacing and data acquisition
-- ✅ Build responsive web interfaces
-- ✅ Implement real-time data visualization
-- ✅ Create RESTful APIs
-- ✅ Handle network communication
-
----
 
 <div align="center">
-
-### ⭐ Star this repository if you find it helpful!
-
-**Made with ❤️ for IoT enthusiasts**
-
-[⬆ Back to Top](#-esp32-weather-station-dashboard)
-
+Made with ❤️ for IoT enthusiasts
+⭐ Star this repository if you find it helpful!
 </div>
