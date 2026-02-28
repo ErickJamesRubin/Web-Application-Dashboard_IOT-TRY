@@ -1,164 +1,351 @@
-# ⚡ ESP32 Weather Station Dashboard
+# 🔥 Firebase Integration Setup Guide
 
-<div align="center">
-
-![Project Status](https://img.shields.io/badge/Status-Active-success)
-![License](https://img.shields.io/badge/License-MIT-blue)
-![Platform](https://img.shields.io/badge/Platform-ESP32-orange)
-![Sensor](https://img.shields.io/badge/Sensor-DHT11-green)
-![Database](https://img.shields.io/badge/Database-Firebase-orange)
-
-**A modern, real-time IoT weather monitoring system with a stunning web dashboard and Firebase cloud storage**
-
-[Features](#-features) • [Installation](#-installation) • [Firebase Setup](#-firebase-setup) • [Usage](#-usage) • [Troubleshooting](#-troubleshooting)
-
-</div>
+Complete guide to integrate Firebase Realtime Database with your ESP32 Weather Station.
 
 ---
 
 ## 📋 Table of Contents
 
-- [Overview](#-overview)
-- [Features](#-features)
-- [Technologies](#-technologies)
-- [Hardware Requirements](#-hardware-requirements)
-- [Software Requirements](#-software-requirements)
-- [Firebase Setup](#-firebase-setup)
-- [Installation](#-installation)
-- [Wiring Diagram](#-wiring-diagram)
-- [Firebase Data Structure](#-firebase-data-structure)
-- [API Endpoints](#-api-endpoints)
-- [File Structure](#-file-structure)
-- [Troubleshooting](#-troubleshooting)
-- [Future Enhancements](#-future-enhancements)
-- [License](#-license)
-- [Acknowledgments](#-acknowledgments)
+1. [Create Firebase Project](#1-create-firebase-project)
+2. [Get Firebase Credentials](#2-get-firebase-credentials)
+3. [Configure ESP32](#3-configure-esp32)
+4. [Configure Dashboard](#4-configure-dashboard)
+5. [Install Firebase Library](#5-install-firebase-library)
+6. [Upload and Test](#6-upload-and-test)
+7. [Firebase Database Structure](#7-firebase-database-structure)
+8. [Troubleshooting](#8-troubleshooting)
 
 ---
 
-## 🌟 Overview
+## 1. Create Firebase Project
 
-This project is a comprehensive **IoT Weather Monitoring System** that uses an ESP32 microcontroller and DHT11 sensor to measure temperature and humidity in real-time. Sensor data is sent directly to **Firebase Realtime Database**, and displayed on a professional animated web dashboard with live data visualization and role-based access.
+### Step 1.1: Go to Firebase Console
+1. Visit: https://console.firebase.google.com/
+2. Click **"Add project"** or **"Create a project"**
 
-### Key Highlights
-
-- 🎨 **Beautiful UI** — Modern glassmorphism design with smooth animations
-- ⚡ **Real-time Updates** — Live sensor data pushed via Firebase every 3 seconds
-- 📊 **Data Visualization** — Interactive charts showing temperature and humidity trends
-- ☁️ **Cloud Storage** — All sensor readings stored in Firebase Realtime Database
-- 🔐 **Role-Based Access** — Admin, Manager, and User roles via Firebase Auth
-- 📱 **Responsive Design** — Works on desktop, tablet, and mobile
-
----
-
-## ✨ Features
-
-### Dashboard Features
-- ✅ Real-time temperature display (°C)
-- ✅ Real-time humidity display (%)
-- ✅ Heat index calculation
-- ✅ Comfort level indicator
-- ✅ System status monitoring
-- ✅ Live updating line charts
-- ✅ Device information panel
-- ✅ Historical data from Firebase
-- ✅ WiFi signal strength display
-- ✅ System uptime tracking
-
-### Firebase Features
-- ✅ Stores every sensor reading with timestamp
-- ✅ Role-based user authentication (Firebase Auth)
-- ✅ Activity logging per user
-- ✅ Email verification via Firebase Auth
-- ✅ Query historical data by date range
-- ✅ Real-time listeners — dashboard updates instantly on new data
-
-### Visual Features
-- ⚡ Lightning text effects on hover
-- 🌊 Animated background particles
-- 💎 Glassmorphism card design
-- 🎭 Smooth transitions and animations
-- 🎨 Color-coded sensor indicators
-- ✨ Pulsing logo animation
+### Step 1.2: Create New Project
+1. **Enter project name**: e.g., `esp32-weather-station`
+2. Click **Continue**
+3. **Google Analytics**: You can disable this for now (optional)
+4. Click **Create project**
+5. Wait for project to be created
+6. Click **Continue**
 
 ---
 
-## 🛠 Technologies
+## 2. Get Firebase Credentials
 
-### Hardware
-- **ESP32** — Microcontroller with WiFi capability
-- **DHT11** — Temperature and humidity sensor
+### Step 2.1: Get Web API Key
+1. In Firebase Console, click **⚙️ Settings** (gear icon) → **Project settings**
+2. Scroll down to **Your apps** section
+3. Click on **Web app** icon `</>`
+4. **Register app name**: e.g., `Weather Dashboard`
+5. Check **"Also set up Firebase Hosting"** (optional)
+6. Click **Register app**
+7. You'll see your Firebase configuration - **SAVE THIS!**
 
-### Software
-- **Arduino IDE** — ESP32 programming
-- **Firebase Realtime Database** — Cloud data storage
-- **Firebase Authentication** — User login and role management
-- **HTML5 / CSS3 / JavaScript** — Frontend dashboard
-- **Firebase JS SDK** — Dashboard-to-Firebase connection
-- **Chart.js** — Data visualization
-
-### Arduino Libraries
-- `WiFi.h` — ESP32 WiFi connectivity
-- `HTTPClient.h` — Sending data to Firebase REST API
-- `DHT.h` — DHT11 sensor interface
-- `ArduinoJson.h` — JSON formatting
-- `FirebaseESP32.h` *(optional)* — Firebase ESP32 client library
-
----
-
-## 🔧 Hardware Requirements
-
-| Component | Specification | Quantity |
-|-----------|--------------|----------|
-| ESP32 Development Board | Any ESP32 variant | 1 |
-| DHT11 Sensor | Temperature & Humidity | 1 |
-| Jumper Wires | Male-to-Female | 3–4 |
-| Breadboard (optional) | Standard size | 1 |
-| USB Cable | Micro-USB or USB-C | 1 |
-| Power Supply | 5V (via USB) | 1 |
-
-### Optional Components
-- 10kΩ resistor (if DHT11 doesn't have built-in pull-up)
-- Enclosure/case for the project
-
----
-
-## 💻 Software Requirements
-
-- Arduino IDE (1.8.x or 2.x)
-- ESP32 Board Support Package
-- USB Drivers (CP2102 or CH340)
-- Google Account (for Firebase Console)
-- Chrome, Firefox, or Edge (latest)
-
-### Required Arduino Libraries
-```
-- DHT sensor library (by Adafruit)
-- Adafruit Unified Sensor
-- ArduinoJson (version 6.x)
-- Firebase ESP32 Client (by Mobizt)   ← install via Library Manager
+Example:
+```javascript
+const firebaseConfig = {
+  apiKey: "AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXX",
+  authDomain: "esp32-weather-station.firebaseapp.com",
+  databaseURL: "https://esp32-weather-station.firebaseio.com",
+  projectId: "esp32-weather-station",
+  storageBucket: "esp32-weather-station.appspot.com",
+  messagingSenderId: "123456789012",
+  appId: "1:123456789012:web:abcdef123456"
+};
 ```
 
+### Step 2.2: Enable Realtime Database
+1. In left sidebar, click **Build** → **Realtime Database**
+2. Click **Create Database**
+3. Choose location (closest to you): e.g., `us-central1`
+4. **Security rules**: Choose **"Start in test mode"** for now
+5. Click **Enable**
+
+**Important:** Test mode rules expire in 30 days. See security rules section below.
+
+### Step 2.3: Get Database URL
+1. In Realtime Database page, you'll see the database URL at the top:
+   ```
+   https://esp32-weather-station.firebaseio.com
+   ```
+2. **SAVE THIS URL!**
+
 ---
 
-## 🔥 Firebase Setup
+## 3. Configure ESP32
 
-### Step 1: Create a Firebase Project
+### Step 3.1: Install Firebase Library
+1. Open Arduino IDE
+2. Go to **Sketch → Include Library → Manage Libraries**
+3. Search for **"Firebase ESP Client"**
+4. Install **"Firebase Arduino Client Library for ESP8266 and ESP32"** by **Mobizt**
+5. Wait for installation to complete
 
-1. Go to [https://console.firebase.google.com](https://console.firebase.google.com)
-2. Click **"Add project"**
-3. Enter project name: `esp32-weather-station`
-4. Enable or disable Google Analytics (optional)
-5. Click **"Create project"**
+### Step 3.2: Update ESP32 Code
+Open `esp32_weather_firebase.ino` and update these lines:
+
+```cpp
+// Line 12-13: WiFi credentials
+const char* ssid = "YOUR_WIFI_SSID";        // Your WiFi name
+const char* password = "YOUR_WIFI_PASSWORD"; // Your WiFi password
+
+// Line 15-16: Firebase credentials
+#define API_KEY "AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXX"  // From firebaseConfig
+#define DATABASE_URL "https://your-project-id.firebaseio.com"  // Your database URL
+```
+
+**Example:**
+```cpp
+const char* ssid = "MyHomeWiFi";
+const char* password = "MySecretPassword123";
+
+#define API_KEY "AIzaSyB1hE6xJ_9kL3mN5o7Q8R_stUvWxYz"
+#define DATABASE_URL "https://esp32-weather-station.firebaseio.com"
+```
+
+### Step 3.3: Upload to ESP32
+1. Connect ESP32 via USB
+2. Select board: **Tools → Board → ESP32 Dev Module**
+3. Select port: **Tools → Port → COMx** or **/dev/ttyUSBx**
+4. Click **Upload** (→)
+5. Wait for "Done uploading"
+
+### Step 3.4: Verify Connection
+1. Open **Serial Monitor** (115200 baud)
+2. You should see:
+   ```
+   WiFi connected!
+   IP Address: 192.168.1.XXX
+   Firebase signup OK
+   HTTP server started
+   Temperature: XX.X°C | Humidity: XX.X% | Heat Index: XX.X°C
+   Firebase updated successfully
+   ```
 
 ---
 
-### Step 2: Enable Realtime Database
+## 4. Configure Dashboard
 
-1. In the Firebase console, go to **Build → Realtime Database**
-2. Click **"Create Database"**
-3. Choose your region (e.g., `us-central1`)
-4. Start in **Test mode** for development:
+### Step 4.1: Update Dashboard Configuration
+Open `weather-dashboard-firebase.html` and find this section (around line 330):
+
+```javascript
+// TODO: Replace with your Firebase config
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "your-project-id.firebaseapp.com",
+    databaseURL: "https://your-project-id.firebaseio.com",
+    projectId: "your-project-id",
+    storageBucket: "your-project-id.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+```
+
+### Step 4.2: Replace with Your Config
+Copy your Firebase config from Step 2.1 and paste it:
+
+```javascript
+const firebaseConfig = {
+    apiKey: "AIzaSyB1hE6xJ_9kL3mN5o7Q8R_stUvWxYz",
+    authDomain: "esp32-weather-station.firebaseapp.com",
+    databaseURL: "https://esp32-weather-station.firebaseio.com",
+    projectId: "esp32-weather-station",
+    storageBucket: "esp32-weather-station.appspot.com",
+    messagingSenderId: "123456789012",
+    appId: "1:123456789012:web:abcdef123456"
+};
+```
+
+### Step 4.3: Open Dashboard
+1. Save the file
+2. Open `weather-dashboard-firebase.html` in your web browser
+3. You should see **"🔥 Firebase: Connected"** in green
+4. Data should start appearing automatically
+
+---
+
+## 5. Install Firebase Library
+
+### For ESP32 (Arduino IDE)
+
+**Method 1: Library Manager**
+1. **Sketch → Include Library → Manage Libraries**
+2. Search: **"Firebase ESP Client"**
+3. Install: **"Firebase Arduino Client Library for ESP8266 and ESP32"** by Mobizt
+4. Version: Latest (6.x or higher)
+
+**Method 2: Manual Installation**
+1. Download from: https://github.com/mobizt/Firebase-ESP-Client
+2. Extract ZIP file
+3. Copy to: `Documents/Arduino/libraries/`
+4. Restart Arduino IDE
+
+### Required Dependencies
+These are auto-installed with Firebase library:
+- ArduinoJson (6.x)
+- WiFiClientSecure
+- HTTPClient
+
+---
+
+## 6. Upload and Test
+
+### Step 6.1: Upload Code to ESP32
+```
+1. Connect ESP32 via USB
+2. Select Board and Port
+3. Click Upload
+4. Wait for completion
+5. Open Serial Monitor (115200 baud)
+```
+
+### Step 6.2: Check Serial Monitor Output
+**Expected output:**
+```
+Connecting to WiFi....
+WiFi connected!
+IP Address: 192.168.1.100
+Firebase signup OK
+HTTP server started
+Temperature: 28.5°C | Humidity: 65.3% | Heat Index: 30.2°C
+Firebase updated successfully
+```
+
+### Step 6.3: Verify Firebase Database
+1. Go to Firebase Console → Realtime Database
+2. You should see data appearing:
+```
+{
+  "weather": {
+    "current": {
+      "temperature": 28.5,
+      "humidity": 65.3,
+      "heatIndex": 30.2,
+      "timestamp": 1234567890
+    },
+    "history": {
+      "1234567890": {
+        "temperature": 28.5,
+        "humidity": 65.3,
+        "heatIndex": 30.2,
+        "timestamp": 1234567890
+      }
+    }
+  },
+  "device": {
+    "status": "online",
+    "uptime": 3600,
+    "rssi": -45,
+    "ip": "192.168.1.100"
+  }
+}
+```
+
+### Step 6.4: Open Dashboard
+1. Open `weather-dashboard-firebase.html` in browser
+2. Check for green **"Firebase: Connected"** badge
+3. Data should update automatically
+
+---
+
+## 7. Firebase Database Structure
+
+### Database Schema
+
+```json
+{
+  "weather": {
+    "current": {
+      "temperature": 28.5,      // Current temperature (°C)
+      "humidity": 65.3,         // Current humidity (%)
+      "heatIndex": 30.2,        // Calculated heat index
+      "timestamp": 1234567890   // Unix timestamp
+    },
+    "history": {
+      "[timestamp1]": {
+        "temperature": 28.5,
+        "humidity": 65.3,
+        "heatIndex": 30.2,
+        "timestamp": 1234567890
+      },
+      "[timestamp2]": {
+        "temperature": 27.8,
+        "humidity": 64.1,
+        "heatIndex": 29.5,
+        "timestamp": 1234567950
+      }
+      // ... last 24 hours of data
+    }
+  },
+  "device": {
+    "status": "online",         // Device status
+    "uptime": 3600,             // Seconds since boot
+    "rssi": -45,                // WiFi signal strength (dBm)
+    "ip": "192.168.1.100"       // ESP32 IP address
+  }
+}
+```
+
+### Data Paths
+
+| Path | Description | Update Frequency |
+|------|-------------|------------------|
+| `/weather/current/*` | Current sensor readings | Every 60 seconds |
+| `/weather/history/*` | Historical data points | Every 60 seconds |
+| `/device/*` | Device information | Every 60 seconds |
+
+### Data Retention
+
+**Current Setup:**
+- History stores **last 24 hours** of data
+- Each data point is stored with timestamp as key
+- Old data is automatically replaced (by timestamp)
+
+**To change retention:**
+```cpp
+// In ESP32 code, line 133
+database.ref('weather/history').limitToLast(24)  // Change number
+```
+
+---
+
+## 8. Troubleshooting
+
+### ❌ Firebase signup failed
+
+**Problem:** Serial Monitor shows `Firebase signup failed`
+
+**Solutions:**
+1. **Check API Key:**
+   - Verify it's correct in ESP32 code
+   - Re-copy from Firebase Console
+   - Must be exact (case-sensitive)
+
+2. **Check Database URL:**
+   - Format: `https://your-project-id.firebaseio.com`
+   - Must include `https://`
+   - No trailing slash
+
+3. **Check Internet Connection:**
+   - ESP32 must have internet access
+   - Test by pinging Google: `ping 8.8.8.8`
+
+4. **Enable Anonymous Auth (if needed):**
+   - Firebase Console → Authentication → Sign-in method
+   - Enable "Anonymous" provider
+
+---
+
+### ❌ Firebase update failed
+
+**Problem:** Serial Monitor shows `Firebase update failed`
+
+**Solutions:**
+1. **Check Database Rules:**
    ```json
    {
      "rules": {
@@ -167,497 +354,249 @@ This project is a comprehensive **IoT Weather Monitoring System** that uses an E
      }
    }
    ```
-   > ⚠️ **Important:** Switch to secure rules before going to production (see Step 6).
+   - Firebase Console → Realtime Database → Rules
+   - Click "Publish" after changing
+
+2. **Check Network:**
+   - Ensure stable WiFi connection
+   - Check ESP32 signal strength (RSSI)
+
+3. **Increase Timeout:**
+   ```cpp
+   // Add after Firebase.begin()
+   Firebase.setReadTimeout(&fbdo, 1000 * 60);
+   Firebase.setwriteSizeLimit(&fbdo, "tiny");
+   ```
 
 ---
 
-### Step 3: Enable Firebase Authentication
+### ❌ Dashboard shows "Firebase: Disconnected"
 
-1. Go to **Build → Authentication**
-2. Click **"Get started"**
-3. Under **Sign-in method**, enable **Email/Password**
-4. Click **Save**
+**Problem:** Dashboard can't connect to Firebase
 
----
+**Solutions:**
+1. **Check Firebase Config:**
+   - Verify all credentials are correct
+   - Check for typos in project ID
+   - Ensure config object is complete
 
-### Step 4: Get Firebase Configuration
+2. **Check Browser Console:**
+   - Press F12 → Console tab
+   - Look for specific error messages
 
-1. Go to **Project Settings** (gear icon)
-2. Under **"Your apps"**, click **"Add app"** → **Web (`</>`)**
-3. Register the app with a name (e.g., `weather-dashboard`)
-4. Copy the Firebase config object:
+3. **Check Database Rules:**
+   - Must allow read access
+   - Test mode: all reads allowed
 
-```javascript
-// Firebase configuration — paste into your dashboard JS
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
-```
+4. **Clear Browser Cache:**
+   - Hard refresh: Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac)
 
 ---
 
-### Step 5: Get Database URL and Secret (for ESP32)
+### ❌ No data appearing in dashboard
 
-1. Go to **Project Settings → Service Accounts**
-2. Click **"Database secrets"** (or use the database URL from Realtime Database)
-3. Copy your **Database URL**: `https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com`
+**Problem:** Dashboard connected but no data shown
 
-In your Arduino sketch, you will use:
-```cpp
-#define FIREBASE_HOST "YOUR_PROJECT_ID-default-rtdb.firebaseio.com"
-#define FIREBASE_AUTH "YOUR_DATABASE_SECRET"
-```
+**Solutions:**
+1. **Verify ESP32 is uploading data:**
+   - Check Firebase Console → Realtime Database
+   - Should see data in `/weather/current/`
+
+2. **Check data paths:**
+   - Dashboard expects specific structure
+   - Verify paths match between ESP32 code and dashboard
+
+3. **Check browser console for errors:**
+   - F12 → Console tab
+   - Look for Firebase errors
 
 ---
 
-### Step 6: Set Secure Firebase Rules (Production)
+### ❌ Historical charts empty
 
-Once ready for production, update your Realtime Database rules:
+**Problem:** Real-time data works but charts empty
 
+**Solutions:**
+1. **Wait for data to accumulate:**
+   - Charts need at least 2-3 data points
+   - Data updates every 60 seconds
+
+2. **Check history path:**
+   ```javascript
+   // In dashboard, verify this line
+   database.ref('weather/history').limitToLast(24)
+   ```
+
+3. **Manually add test data:**
+   - Firebase Console → Realtime Database
+   - Click "+" to add data manually
+
+---
+
+## 🔒 Security Rules (Production)
+
+**⚠️ Important:** Test mode rules expire in 30 days!
+
+### Option 1: Read-Only Access
 ```json
 {
   "rules": {
-    "sensor_readings": {
-      ".read": "auth != null",
+    "weather": {
+      ".read": true,
       ".write": "auth != null"
     },
-    "users": {
-      "$uid": {
-        ".read": "$uid === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin'",
-        ".write": "$uid === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin'"
-      }
-    },
-    "activity_logs": {
-      ".read": "root.child('users').child(auth.uid).child('role').val() === 'admin'",
+    "device": {
+      ".read": true,
       ".write": "auth != null"
     }
   }
 }
 ```
 
----
-
-### Step 7: Create Default Users in Firebase Auth
-
-1. Go to **Build → Authentication → Users**
-2. Click **"Add user"** and create the following:
-
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | admin@example.com | password123 |
-| Manager | manager@example.com | password123 |
-| User | user@example.com | password123 |
-
-3. After creating users, store their roles in Realtime Database under `/users/{uid}/role`.
-
----
-
-## 🔥 Firebase Data Structure
-
-This is how data is organized in your Firebase Realtime Database:
-
-```
-esp32-weather-station (root)
-│
-├── sensor_readings/
-│   ├── -NxABC123def/                    ← Auto-generated push key
-│   │   ├── temperature: 28.5
-│   │   ├── humidity: 65.3
-│   │   ├── heat_index: 30.2
-│   │   ├── wifi_rssi: -45
-│   │   ├── esp32_ip: "192.168.1.101"
-│   │   └── recorded_at: 1709041200000   ← Unix timestamp (ms)
-│   │
-│   └── -NxDEF456ghi/
-│       ├── temperature: 29.1
-│       ├── humidity: 63.8
-│       └── ...
-│
-├── users/
-│   ├── {firebase_uid_1}/
-│   │   ├── name: "Administrator"
-│   │   ├── email: "admin@example.com"
-│   │   ├── role: "admin"
-│   │   └── created_at: 1709041200000
-│   │
-│   ├── {firebase_uid_2}/
-│   │   ├── name: "Manager User"
-│   │   ├── role: "manager"
-│   │   └── ...
-│   │
-│   └── {firebase_uid_3}/
-│       ├── name: "Regular User"
-│       ├── role: "user"
-│       └── ...
-│
-├── activity_logs/
-│   ├── -NxLOG001/
-│   │   ├── user_id: "{firebase_uid}"
-│   │   ├── action: "Viewed dashboard"
-│   │   ├── module: "dashboard"
-│   │   └── timestamp: 1709041200000
-│   └── ...
-│
-└── sensor_alerts/
-    ├── -NxALERT001/
-    │   ├── reading_key: "-NxABC123def"
-    │   ├── alert_type: "high_temp"       ← high_temp | low_temp | high_humidity | low_humidity
-    │   ├── value: 39.5
-    │   ├── threshold: 35.0
-    │   ├── is_resolved: false
-    │   └── created_at: 1709041200000
-    └── ...
-```
-
-### 📋 Node Descriptions
-
-| Node | Purpose |
-|------|---------|
-| `sensor_readings/` | Stores every temperature & humidity reading pushed from ESP32 |
-| `users/` | Stores user profiles and roles linked to Firebase Auth UIDs |
-| `activity_logs/` | Tracks user actions for audit trail |
-| `sensor_alerts/` | Records when readings exceed defined thresholds |
-
----
-
-## 📂 File Structure
-
-```
-app/
-│
-├── admin/
-│   └── dashboard.php              ← Admin-only dashboard
-│
-├── auth/
-│   ├── signout.php
-│   └── verify-email.php
-│
-├── manager/
-│   └── dashboard.php              ← Manager dashboard
-│
-├── user/
-│   └── dashboard.php              ← User dashboard
-│
-├── users/
-│   ├── dashboard.php
-│   ├── user-create.php
-│   ├── user-delete.php
-│   ├── user-update.php
-│   └── user-view.php
-│
-├── assets/
-│   └── css/
-│       └── style.css
-│
-├── config/
-│   └── firebase-config.js         ← Firebase credentials & init
-│
-├── includes/
-│   └── activity-logger.js         ← Logs user actions to Firebase
-│
-├── tests/
-│   ├── test-access.php
-│   ├── test-login.php
-│   └── test-mail.php
-│
-├── weather-dashboard-live.html    ← Main live dashboard
-├── weather-dashboard.html         ← Demo/simulated dashboard
-└── index.php                      ← Login page
-```
-
----
-
-## 🚀 ESP32 Arduino Setup
-
-### 1️⃣ Install Firebase ESP32 Library
-
-In Arduino IDE go to **Sketch → Include Library → Manage Libraries**, search for:
-```
-Firebase ESP32 Client by Mobizt
-```
-Install it.
-
----
-
-### 2️⃣ Configure WiFi and Firebase in Sketch
-
-```cpp
-#include <WiFi.h>
-#include <FirebaseESP32.h>
-#include <DHT.h>
-
-// WiFi credentials
-#define WIFI_SSID     "YOUR_WIFI_SSID"
-#define WIFI_PASSWORD "YOUR_WIFI_PASSWORD"
-
-// Firebase credentials
-#define FIREBASE_HOST "YOUR_PROJECT_ID-default-rtdb.firebaseio.com"
-#define FIREBASE_AUTH "YOUR_DATABASE_SECRET"
-
-// DHT sensor
-#define DHTPIN  4
-#define DHTTYPE DHT11
-
-DHT dht(DHTPIN, DHTTYPE);
-FirebaseData firebaseData;
-
-void setup() {
-    Serial.begin(115200);
-    dht.begin();
-
-    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
-    }
-    Serial.println("\nWiFi connected: " + WiFi.localIP().toString());
-
-    Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
-    Firebase.reconnectWiFi(true);
-}
-
-void loop() {
-    float temp = dht.readTemperature();
-    float hum  = dht.readHumidity();
-    float hi   = dht.computeHeatIndex(temp, hum, false);
-
-    if (!isnan(temp) && !isnan(hum)) {
-        FirebaseJson json;
-        json.set("temperature", temp);
-        json.set("humidity",    hum);
-        json.set("heat_index",  hi);
-        json.set("wifi_rssi",   WiFi.RSSI());
-        json.set("esp32_ip",    WiFi.localIP().toString());
-        json.set("recorded_at", millis());
-
-        if (Firebase.pushJSON(firebaseData, "/sensor_readings", json)) {
-            Serial.println("✅ Data sent to Firebase");
-        } else {
-            Serial.println("❌ Firebase error: " + firebaseData.errorReason());
-        }
-    }
-
-    delay(3000); // Send every 3 seconds
-}
-```
-
----
-
-### 3️⃣ Connect Dashboard to Firebase
-
-In your `config/firebase-config.js`:
-
-```javascript
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.x.x/firebase-app.js";
-import { getDatabase, ref, onValue, query, limitToLast }
-    from "https://www.gstatic.com/firebasejs/10.x.x/firebase-database.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.x.x/firebase-auth.js";
-
-const firebaseConfig = {
-    apiKey:            "YOUR_API_KEY",
-    authDomain:        "YOUR_PROJECT_ID.firebaseapp.com",
-    databaseURL:       "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-    projectId:         "YOUR_PROJECT_ID",
-    storageBucket:     "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId:             "YOUR_APP_ID"
-};
-
-const app  = initializeApp(firebaseConfig);
-const db   = getDatabase(app);
-const auth = getAuth(app);
-
-// Listen for real-time sensor updates (last 20 readings)
-const readingsRef = query(ref(db, 'sensor_readings'), limitToLast(20));
-
-onValue(readingsRef, (snapshot) => {
-    const data = snapshot.val();
-    // Update dashboard UI with latest data
-    console.log("Latest readings:", data);
-});
-```
-
----
-
-## 🔌 Wiring Diagram
-
-```
-DHT11 Pin  →  ESP32 Pin
----------     ---------
-VCC (+)    →  3.3V
-GND (-)    →  GND
-DATA (S)   →  GPIO 4
-
-     ESP32                    DHT11
-  ┌─────────┐              ┌──────┐
-  │   3.3V  ├──────────────┤ VCC  │
-  │   GND   ├──────────────┤ GND  │
-  │  GPIO4  ├──────────────┤ DATA │
-  └─────────┘              └──────┘
-```
-
-> **Note:** Add a 10kΩ pull-up resistor between VCC and DATA if your DHT11 has no built-in one.
-
----
-
-## 🔌 API Endpoints
-
-Firebase Realtime Database exposes a REST API automatically. You can interact with your data directly:
-
-### Read latest sensor readings
-```
-GET https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com/sensor_readings.json?orderBy="recorded_at"&limitToLast=20
-```
-
-### Write a new reading (ESP32 uses this via library)
-```
-POST https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com/sensor_readings.json
-```
-
-**Body:**
+### Option 2: Authenticated Access
 ```json
 {
-  "temperature": 28.5,
-  "humidity": 65.3,
-  "heat_index": 30.2,
-  "wifi_rssi": -45,
-  "esp32_ip": "192.168.1.101",
-  "recorded_at": 1709041200000
+  "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null"
+  }
 }
 ```
 
-### Read user role
-```
-GET https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com/users/{uid}/role.json
-```
-
----
-
-## 🐛 Troubleshooting
-
-### ESP32 Issues
-
-| Problem | Solutions |
-|---------|-----------|
-| ❌ ESP32 won't upload | Hold **BOOT** button while uploading, check USB cable is data-capable, install CP2102/CH340 drivers, select correct COM port and board |
-| ❌ Sensor reads "nan" | Check wiring, ensure 3.3V power, add 10kΩ pull-up resistor, verify GPIO pin in code |
-| ❌ Won't connect to WiFi | Use 2.4GHz network only, double-check SSID and password in sketch |
-| ❌ Firebase push fails | Check `FIREBASE_HOST` and `FIREBASE_AUTH` values, verify database rules allow write |
-
-### Dashboard Issues
-
-| Problem | Solutions |
-|---------|-----------|
-| ❌ Dashboard shows no data | Check Firebase config values in `firebase-config.js`, verify database rules allow read |
-| ❌ Auth errors | Ensure Email/Password sign-in is enabled in Firebase Console |
-| ❌ Charts not updating | Check browser console for JS errors, verify `onValue` listener is attached |
-
-### Firebase Issues
-
-| Problem | Solutions |
-|---------|-----------|
-| ❌ Permission denied | Check database rules — set `.read` and `.write` to `true` in test mode |
-| ❌ Data not appearing | Open Firebase Console → Realtime Database and watch for incoming data in real time |
-| ❌ Auth not working | Ensure Firebase Auth is enabled and Email/Password provider is turned on |
-
----
-
-## 🚀 Future Enhancements
-
-- [ ] Firebase Cloud Messaging (push notifications for alerts)
-- [ ] Firebase Cloud Functions for automated threshold alerts
-- [ ] CSV/Excel data export from Firebase
-- [ ] PWA support for offline access
-- [ ] Support for multiple ESP32 devices
-- [ ] DHT22 / BMP280 / MQ-135 sensor upgrades
-- [ ] OLED display for standalone operation
-- [ ] Advanced analytics — daily/weekly/monthly reports
-- [ ] Firestore migration for complex queries
-
----
-
-## 🤝 Contributing
-
-1. **Fork** the repository
-2. **Create** a feature branch (`git checkout -b feature/AmazingFeature`)
-3. **Commit** your changes (`git commit -m 'Add some AmazingFeature'`)
-4. **Push** to the branch (`git push origin feature/AmazingFeature`)
-5. **Open** a Pull Request
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License**.
-
-```
-MIT License
-
-Copyright (c) 2026 [Your Name]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+### Option 3: Public Read, Authenticated Write
+```json
+{
+  "rules": {
+    "weather": {
+      ".read": true,
+      "current": {
+        ".write": "auth != null"
+      },
+      "history": {
+        ".write": "auth != null"
+      }
+    },
+    "device": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    }
+  }
+}
 ```
 
----
-
-## 🙏 Acknowledgments
-
-- [Firebase](https://firebase.google.com/) — Realtime Database and Authentication
-- [Chart.js](https://www.chartjs.org/) — Data visualization
-- [Adafruit DHT Library](https://github.com/adafruit/DHT-sensor-library) — Sensor support
-- [ArduinoJson](https://arduinojson.org/) — JSON handling
-- [Firebase ESP32 Client by Mobizt](https://github.com/mobizt/Firebase-ESP32) — ESP32 Firebase library
-- Espressif for the ESP32 platform
-- Arduino community for continued support
+**To update rules:**
+1. Firebase Console → Realtime Database → Rules tab
+2. Paste new rules
+3. Click **Publish**
 
 ---
 
-## 📞 Contact & Support
+## 💡 Tips & Best Practices
 
-- **Author:** [Your Name]
-- **Email:** [your.email@example.com]
-- **GitHub:** [@yourusername](https://github.com/yourusername)
-- **Project Link:** [https://github.com/yourusername/esp32-weather-station](https://github.com/yourusername/esp32-weather-station)
+### 1. **Data Update Frequency**
+Current: Every 60 seconds
+
+To change:
+```cpp
+// Line 99 in ESP32 code
+const unsigned long firebaseInterval = 60000; // milliseconds
+```
+
+**Recommendations:**
+- For demo: 10-30 seconds (10000-30000)
+- For production: 60-300 seconds (60000-300000)
+- Balance: More frequent = more data, higher costs
+
+### 2. **Data Retention**
+Current: Last 24 hours (24 data points)
+
+To store more:
+```cpp
+// Change limitToLast value
+database.ref('weather/history').limitToLast(168)  // 1 week
+database.ref('weather/history').limitToLast(720)  // 1 month
+```
+
+### 3. **Database Backup**
+1. Firebase Console → Realtime Database
+2. Click **⋮** (three dots) → **Export JSON**
+3. Save backup file
+
+### 4. **Monitor Usage**
+1. Firebase Console → Usage tab
+2. Check:
+   - Database reads/writes
+   - Storage used
+   - Bandwidth
+
+**Free tier limits:**
+- 1 GB stored
+- 10 GB/month downloaded
+- 100 simultaneous connections
+
+### 5. **Optimize Costs**
+- Reduce update frequency
+- Limit historical data points
+- Use Firebase indexes for queries
+- Archive old data periodically
 
 ---
 
-## 🎓 Educational Value
+## 📊 Firebase Dashboard Features
 
-This project demonstrates:
+### What the Dashboard Shows:
 
-1. **IoT Fundamentals** — Sensor interfacing and WiFi connectivity
-2. **Web Development** — HTML, CSS, JavaScript, responsive design
-3. **Embedded Systems** — ESP32 programming and real-time systems
-4. **Cloud Database Design** — Firebase Realtime Database structure and rules
-5. **API Design** — Firebase REST API and real-time listeners
-6. **Data Visualization** — Charts and real-time updates
+1. **Real-time Data:**
+   - Current temperature
+   - Current humidity
+   - Heat index
+   - System status
+
+2. **Historical Trends:**
+   - Temperature chart (last 24 hours)
+   - Humidity chart (last 24 hours)
+   - Automatic updates
+
+3. **Device Info:**
+   - System uptime
+   - WiFi signal strength
+   - IP address
+   - Firebase connection status
+
+4. **Auto-sync:**
+   - No refresh needed
+   - Updates appear instantly
+   - Works across multiple devices
 
 ---
 
-<div align="center">
+## 🎯 Next Steps
 
-### ⭐ Star this repository if you find it helpful!
+Now that Firebase is set up:
 
-**Made with ❤️ for IoT enthusiasts**
+1. ✅ **Test the system** - Verify data is flowing
+2. ✅ **Set proper security rules** - Protect your database
+3. ✅ **Customize update frequency** - Based on your needs
+4. ✅ **Add more features:**
+   - Email alerts for extreme temps
+   - Mobile app
+   - Data export
+   - Multiple sensors
 
-[⬆ Back to Top](#-esp32-weather-station-dashboard)
+---
 
-</div>
+## 📞 Need Help?
+
+**Common Issues:**
+- API Key errors → Double-check credentials
+- Connection timeouts → Check WiFi strength
+- No data in dashboard → Verify database rules
+
+**Resources:**
+- Firebase Documentation: https://firebase.google.com/docs
+- ESP32 Firebase Library: https://github.com/mobizt/Firebase-ESP-Client
+- Arduino Forum: https://forum.arduino.cc
+
+---
+
+**Congratulations! 🎉** Your ESP32 Weather Station now has cloud storage with Firebase!
