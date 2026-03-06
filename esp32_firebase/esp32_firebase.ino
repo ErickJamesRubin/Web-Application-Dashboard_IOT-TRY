@@ -15,12 +15,12 @@
 // ----------------------------------------------------------------
 // 🔧 CONFIGURE THESE — your own values
 // ----------------------------------------------------------------
-#define WIFI_SSID        "YOUR_WIFI_NAME"
-#define WIFI_PASSWORD    "YOUR_WIFI_PASSWORD"
+#define WIFI_SSID        "REBEMAE GWAPA"       // ← fill in your WiFi name
+#define WIFI_PASSWORD    "FHE LUMIGUID"   // ← fill in your WiFi password
 
-// Firebase → Project Settings → Service Accounts → Database secrets
-#define FIREBASE_HOST    "YOUR_PROJECT_ID-default-rtdb.firebaseio.com"
-#define FIREBASE_AUTH    "YOUR_DATABASE_SECRET_OR_API_KEY"
+// Firebase credentials — taken from your Firebase Project Settings
+#define FIREBASE_HOST    "esp32-weather-station-91608-default-rtdb.firebaseio.com"
+#define FIREBASE_AUTH    "AIzaSyDaCwd669Af_0UBOfdmy_fmstROGkTs4"  // Web API Key
 
 // DHT11 pin — change if yours is different
 #define DHTPIN  4
