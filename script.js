@@ -9,13 +9,13 @@
 // Firebase Console → Project Settings → Your Apps → Web App
 // ============================================================
 const firebaseConfig = {
-  apiKey:            "YOUR_API_KEY",
-  authDomain:        "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL:       "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-  projectId:         "YOUR_PROJECT_ID",
-  storageBucket:     "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId:             "YOUR_APP_ID"
+  apiKey:            "AIzaSyDaCwd669Af_0UBOfdmy_fmstROGkTs4",
+  authDomain:        "esp32-weather-station-91608.firebaseapp.com",
+  databaseURL:       "https://esp32-weather-station-91608-default-rtdb.firebaseio.com",
+  projectId:         "esp32-weather-station-91608",
+  storageBucket:     "esp32-weather-station-91608.appspot.com",
+  messagingSenderId: "650143484331",
+  appId:             "1:650143484331:web:fb11ca0c9c31fe69c86ee"
 };
 
 // Initialize Firebase
