@@ -1,182 +1,233 @@
-// Generate particles
-        const particlesContainer = document.getElementById('particles');
-        for (let i = 0; i < 50; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.top = Math.random() * 100 + '%';
-            particle.style.animationDelay = Math.random() * 20 + 's';
-            particlesContainer.appendChild(particle);
-        }
+// ============================================================
+// script.js — ESP32 Weather Station Dashboard
+// Firebase Realtime Database listener + Chart.js rendering
+// ============================================================
 
-        // Simulate sensor data
-        let currentTemp = 28;
-        let currentHumidity = 65;
-        let tempHistory = [];
-        let humidityHistory = [];
-        let timeLabels = [];
-        let uptimeSeconds = 0;
+// ============================================================
+// 🔥 FIREBASE CONFIGURATION
+// Replace these values with YOUR Firebase project credentials.
+// Firebase Console → Project Settings → Your Apps → Web App
+// ============================================================
+const firebaseConfig = {
+  apiKey:            "YOUR_API_KEY",
+  authDomain:        "YOUR_PROJECT_ID.firebaseapp.com",
+  databaseURL:       "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+  projectId:         "YOUR_PROJECT_ID",
+  storageBucket:     "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId:             "YOUR_APP_ID"
+};
 
-        // Initialize historical data
-        for (let i = 24; i >= 0; i--) {
-            const hour = new Date();
-            hour.setHours(hour.getHours() - i);
-            timeLabels.push(hour.getHours() + ':00');
-            tempHistory.push(25 + Math.random() * 6);
-            humidityHistory.push(60 + Math.random() * 15);
-        }
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-        // Temperature Chart
-        const tempCtx = document.getElementById('tempChart').getContext('2d');
-        const tempChart = new Chart(tempCtx, {
-            type: 'line',
-            data: {
-                labels: timeLabels,
-                datasets: [{
-                    label: 'Temperature (°C)',
-                    data: tempHistory,
-                    borderColor: '#ff6b6b',
-                    backgroundColor: 'rgba(255, 107, 107, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 0,
-                    pointHoverRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.05)'
-                        },
-                        ticks: {
-                            color: '#94a3b8'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.05)'
-                        },
-                        ticks: {
-                            color: '#94a3b8'
-                        }
-                    }
-                }
-            }
-        });
+// ============================================================
+// Firebase status indicator
+// ============================================================
+const fbDot  = document.getElementById('fbDot');
+const fbText = document.getElementById('fbStatusText');
 
-        // Humidity Chart
-        const humidityCtx = document.getElementById('humidityChart').getContext('2d');
-        const humidityChart = new Chart(humidityCtx, {
-            type: 'line',
-            data: {
-                labels: timeLabels,
-                datasets: [{
-                    label: 'Humidity (%)',
-                    data: humidityHistory,
-                    borderColor: '#4facfe',
-                    backgroundColor: 'rgba(79, 172, 254, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 0,
-                    pointHoverRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.05)'
-                        },
-                        ticks: {
-                            color: '#94a3b8'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.05)'
-                        },
-                        ticks: {
-                            color: '#94a3b8'
-                        }
-                    }
-                }
-            }
-        });
+function setFirebaseStatus(state) {
+  fbDot.className = 'firebase-dot ' + state;
+  if (state === 'connected') {
+    fbText.textContent = '🔥 Firebase Connected — Live Data';
+  } else if (state === 'error') {
+    fbText.textContent = '⚠️ Firebase Error — Check Config';
+  } else {
+    fbText.textContent = 'Connecting to Firebase...';
+  }
+}
 
-        // Update sensor readings
-        function updateSensorData() {
-            // Simulate slight variations
-            currentTemp = 25 + Math.random() * 6;
-            currentHumidity = 60 + Math.random() * 15;
+// ============================================================
+// Background particles
+// ============================================================
+const particlesContainer = document.getElementById('particles');
+for (let i = 0; i < 50; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.style.left           = Math.random() * 100 + '%';
+  p.style.top            = Math.random() * 100 + '%';
+  p.style.animationDelay = Math.random() * 20 + 's';
+  particlesContainer.appendChild(p);
+}
 
-            document.getElementById('temperature').textContent = currentTemp.toFixed(1);
-            document.getElementById('humidity').textContent = currentHumidity.toFixed(1);
-            
-            // Calculate heat index (simplified formula)
-            const heatIndex = currentTemp + (0.2 * currentHumidity);
-            document.getElementById('heatIndex').textContent = heatIndex.toFixed(1);
+// ============================================================
+// Chart.js — rolling 20-point history
+// ============================================================
+const MAX_POINTS    = 20;
+let tempHistory     = Array(MAX_POINTS).fill(null);
+let humidityHistory = Array(MAX_POINTS).fill(null);
+let timeLabels      = Array(MAX_POINTS).fill('');
 
-            // Determine comfort level
-            let comfortLevel = 'Comfortable';
-            if (heatIndex > 32) comfortLevel = 'Very Hot';
-            else if (heatIndex > 29) comfortLevel = 'Hot';
-            else if (heatIndex < 20) comfortLevel = 'Cool';
-            document.getElementById('comfort-level').textContent = comfortLevel;
+// Temperature Chart
+const tempCtx   = document.getElementById('tempChart').getContext('2d');
+const tempChart = new Chart(tempCtx, {
+  type: 'line',
+  data: {
+    labels: timeLabels,
+    datasets: [{
+      label: 'Temperature (°C)',
+      data: tempHistory,
+      borderColor: '#ff6b6b',
+      backgroundColor: 'rgba(255, 107, 107, 0.1)',
+      borderWidth: 3,
+      fill: true,
+      tension: 0.4,
+      pointRadius: 0,
+      pointHoverRadius: 6
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: {
+        beginAtZero: false,
+        grid:  { color: 'rgba(255,255,255,0.05)' },
+        ticks: { color: '#94a3b8' }
+      },
+      x: {
+        grid:  { color: 'rgba(255,255,255,0.05)' },
+        ticks: { color: '#94a3b8', maxTicksLimit: 6 }
+      }
+    }
+  }
+});
 
-            // Update change indicators
-            document.getElementById('temp-change').textContent = '+' + (Math.random() * 2).toFixed(1) + '°C';
-            document.getElementById('humidity-change').textContent = '-' + (Math.random() * 3).toFixed(1) + '%';
+// Humidity Chart
+const humidityCtx   = document.getElementById('humidityChart').getContext('2d');
+const humidityChart = new Chart(humidityCtx, {
+  type: 'line',
+  data: {
+    labels: timeLabels,
+    datasets: [{
+      label: 'Humidity (%)',
+      data: humidityHistory,
+      borderColor: '#4facfe',
+      backgroundColor: 'rgba(79, 172, 254, 0.1)',
+      borderWidth: 3,
+      fill: true,
+      tension: 0.4,
+      pointRadius: 0,
+      pointHoverRadius: 6
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: {
+        beginAtZero: false,
+        grid:  { color: 'rgba(255,255,255,0.05)' },
+        ticks: { color: '#94a3b8' }
+      },
+      x: {
+        grid:  { color: 'rgba(255,255,255,0.05)' },
+        ticks: { color: '#94a3b8', maxTicksLimit: 6 }
+      }
+    }
+  }
+});
 
-            // Update timestamp
-            const now = new Date();
-            document.getElementById('lastUpdate').textContent = now.toLocaleTimeString();
+// ============================================================
+// State tracking
+// ============================================================
+let prevTemp      = null;
+let prevHumidity  = null;
+let uptimeSeconds = 0;
 
-            // Update charts
-            tempHistory.shift();
-            tempHistory.push(currentTemp);
-            humidityHistory.shift();
-            humidityHistory.push(currentHumidity);
+// Local uptime counter (resets on page reload)
+setInterval(() => {
+  uptimeSeconds++;
+  const h = Math.floor(uptimeSeconds / 3600);
+  const m = Math.floor((uptimeSeconds % 3600) / 60);
+  const s = uptimeSeconds % 60;
+  document.getElementById('uptime').textContent = `${h}h ${m}m ${s}s`;
+}, 1000);
 
-            const newLabel = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
-            timeLabels.shift();
-            timeLabels.push(newLabel);
+// ============================================================
+// 🔥 Firebase Realtime Listener
+// Path: /sensor/current  ← must match what your ESP32 writes to
+// ============================================================
+db.ref('/sensor/current').on(
+  'value',
+  (snapshot) => {
+    setFirebaseStatus('connected');
+    const data = snapshot.val();
+    if (!data) return;
 
-            tempChart.update();
-            humidityChart.update();
-        }
+    const temp     = parseFloat(data.temperature);
+    const humidity = parseFloat(data.humidity);
 
-        // Update uptime
-        function updateUptime() {
-            uptimeSeconds++;
-            const hours = Math.floor(uptimeSeconds / 3600);
-            const minutes = Math.floor((uptimeSeconds % 3600) / 60);
-            const seconds = uptimeSeconds % 60;
-            document.getElementById('uptime').textContent = 
-                `${hours}h ${minutes}m ${seconds}s`;
-        }
+    // ── Temperature card ──────────────────────────────────────
+    document.getElementById('temperature').textContent = temp.toFixed(1);
+    if (prevTemp !== null) {
+      const delta = temp - prevTemp;
+      const el    = document.getElementById('temp-change');
+      el.textContent = (delta >= 0 ? '+' : '') + delta.toFixed(1) + '°C';
+      el.parentElement.className = 'stat-change ' + (delta >= 0 ? 'change-up' : 'change-down');
+      el.parentElement.querySelector('span:first-child').textContent = delta >= 0 ? '↑' : '↓';
+    }
+    prevTemp = temp;
 
-        // Initial update
-        updateSensorData();
+    // ── Humidity card ─────────────────────────────────────────
+    document.getElementById('humidity').textContent = humidity.toFixed(1);
+    if (prevHumidity !== null) {
+      const delta = humidity - prevHumidity;
+      const el    = document.getElementById('humidity-change');
+      el.textContent = (delta >= 0 ? '+' : '') + delta.toFixed(1) + '%';
+      el.parentElement.className = 'stat-change ' + (delta >= 0 ? 'change-up' : 'change-down');
+      el.parentElement.querySelector('span:first-child').textContent = delta >= 0 ? '↑' : '↓';
+    }
+    prevHumidity = humidity;
 
-        // Update every 3 seconds
-        setInterval(updateSensorData, 3000);
-        setInterval(updateUptime, 1000);
+    // ── Heat Index (Steadman formula) ─────────────────────────
+    const hi =
+      -8.78469475556
+      + 1.61139411       * temp
+      + 2.33854883889    * humidity
+      + (-0.14611605)    * temp * humidity
+      + (-0.012308094)   * temp * temp
+      + (-0.0164248277778) * humidity * humidity
+      + 0.002211732      * temp * temp * humidity
+      + 0.00072546       * temp * humidity * humidity
+      + (-0.000003582)   * temp * temp * humidity * humidity;
+
+    const heatIndex = isNaN(hi) ? temp : hi;
+    document.getElementById('heatIndex').textContent = heatIndex.toFixed(1);
+
+    let comfort = 'Comfortable';
+    if      (heatIndex > 39) comfort = '🔥 Danger';
+    else if (heatIndex > 35) comfort = '🥵 Very Hot';
+    else if (heatIndex > 32) comfort = '☀️ Hot';
+    else if (heatIndex < 20) comfort = '❄️ Cool';
+    document.getElementById('comfort-level').textContent = comfort;
+
+    // ── System Status ─────────────────────────────────────────
+    document.getElementById('systemStatus').textContent = 'ONLINE';
+    document.getElementById('lastUpdate').textContent   = new Date().toLocaleTimeString();
+
+    // ── Optional device fields (sent by ESP32) ────────────────
+    if (data.rssi) document.getElementById('wifiSignal').textContent = data.rssi + ' dBm';
+    if (data.ip)   document.getElementById('ipAddress').textContent  = data.ip;
+
+    // ── Update Charts ─────────────────────────────────────────
+    const now   = new Date();
+    const label = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
+
+    tempHistory.shift();     tempHistory.push(temp);
+    humidityHistory.shift(); humidityHistory.push(humidity);
+    timeLabels.shift();      timeLabels.push(label);
+
+    tempChart.update();
+    humidityChart.update();
+  },
+  (error) => {
+    setFirebaseStatus('error');
+    console.error('Firebase error:', error);
+    document.getElementById('systemStatus').textContent = 'ERROR';
+  }
+);
